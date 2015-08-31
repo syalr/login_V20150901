@@ -38,7 +38,6 @@ public:
 	BOOL SendToDBServer( BYTE * pMsg, WORD wSize );
 	
 private:
-	
 	BOOL m_bShutdown;
 	
 	IOCPServer * m_pIOCPServer;

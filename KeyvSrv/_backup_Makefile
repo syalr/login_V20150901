@@ -31,6 +31,9 @@ OBJS = 	Utility/Yond_mutex.o \
 		KeyvSrv/KeyvFactory.o \
 		KeyvSrv/KeyvServer.o \
 		KeyvSrv/ServerSession.o \
+		KeyvSrv/Handler_FromLoginServer.o \
+		KeyvSrv/Handler_FromDBServer.o \
+		KeyvSrv/PacketHandler.o \
 		KeyvSrv/LoginServerSession.o \
 		KeyvSrv/DBServerSession.o \
 		KeyvSrv/KeyvMain.o

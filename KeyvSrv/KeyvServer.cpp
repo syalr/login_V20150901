@@ -113,11 +113,6 @@ BOOL KeyvServer::Update( DWORD dwDeltaTick )
 	return TRUE;
 }
 
-//void LineServer::Release()
-//{
-//	
-//}
-
 BOOL KeyvServer::SendToLoginServer( BYTE * pMsg, WORD wSize)
 {
 	printf("[LineServer::SendToLoginServer]\n");
