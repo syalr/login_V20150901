@@ -1,7 +1,5 @@
 #include "LoginServerSession.h"
 
-#include "PacketHandler.h"
-
 LoginServerSession::LoginServerSession()
 {
 	m_userCount = 0;
@@ -30,7 +28,6 @@ void LoginServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
 	printf("[LoginServerSession::OnRecv]\n");
 	printf("call g_PacketHandler.ParsePacket_AL function.\n");
-	//g_PacketHandler.ParsePacket_AL( this, (MSG_BASE *)pMsg, wSize);
 }
 
 void LoginServerSession::OnConnect( BOOL bSuccess, DWORD dwNetworkIndex )
@@ -42,8 +39,9 @@ void LoginServerSession::OnConnect( BOOL bSuccess, DWORD dwNetworkIndex )
 		printf("Send Server Type.\n");
 		ServerSession::SendServerType();
 	}
-	else
+	else {
 		printf("[LoginServer]: LoginServerSession::OnConnect Fail\n");
+	}
 }
 
 void LoginServerSession::OnDisconnect()
@@ -56,29 +54,3 @@ void LoginServerSession::OnLogString( char * pszLog)
 {
 	
 }
-
-// @{ Save its after Login; }
-/*
-void LoginServerSession::AddUser(LoginUser * pNewUser)
-{
-	LoginUser * pUser = m_hashUser->GetData( pNewUser->GetHashKey() );
-	
-	assert( !pUser );
-	
-	m_hashUser->Add(pNewUser, pNewUser->GetHashKey() );
-}
-
-LoginUser * LoginServerSession::FindUser(DWORD dwKey)
-{
-	return m_hashUser->GetData( dwKey );
-}
-
-void LoginServerSession::RemoveUser(DWORD dwKey)
-{
-	LoginUser * pUser = m_hashUser->GetData( dwKey );
-	if ( pUser ) 
-	{
-		m_hashUser->Remove( dwKey );
-	}
-}
-*/

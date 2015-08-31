@@ -4,7 +4,6 @@
 #include <Utility.h>
 #include <Common.h>
 #include <Network.h>
-
 #include "ServerSession.h"
 
 class DBServerSession : public ServerSession

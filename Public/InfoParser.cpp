@@ -29,7 +29,11 @@ BOOL InfoParser::Init( char *strFileName )
 	return TRUE;
 }
 
-BOOL InfoParser::GetString( char * strSection, char * szName, char * szDefault, char *pszValue )
+BOOL InfoParser::GetString( 
+			const char * strSection, 
+			const char * szName, 
+			const char * szDefault, 
+				  char * pszValue )
 {
 	char szBuffer[256];
 

@@ -6,8 +6,6 @@
 #include <Network.h>
 #include "ServerSession.h"
 
-#include "LineUser.h"
-
 class LoginServerSession : public ServerSession
 {
 public:

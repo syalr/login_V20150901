@@ -1,15 +1,13 @@
-#include "LineServer.h"
-
+#include "KeyvServer.h"
 #include "InfoParser.h"
-
 
 NetworkObject * CreateServerSideAcceptedObject();
 VOID DestroyServerSideAcceptedObject( NetworkObject *pNetworkObject );
 VOID DestroyServerSideConnectedObject( NetworkObject *pNetworkObject );
 
-LineServer * g_LineServer = NULL;
+KeyvServer * g_pKeyvServer = NULL;
 
-LineServer::LineServer(void)
+KeyvServer::KeyvServer(void)
 {
 	m_bShutdown = FALSE;
 	m_pIOCPServer = NULL;
@@ -18,15 +16,15 @@ LineServer::LineServer(void)
 	m_pLoginServerSession = NULL;
 }
 
-LineServer::~LineServer(void)
+KeyvServer::~KeyvServer(void)
 {
 	if ( m_pIOCPServer )
 		delete m_pIOCPServer;
 }
 
-BOOL LineServer::Init()
+BOOL KeyvServer::Init()
 {
-	LineFactory::Instance()->Init();
+	KeyvFactory::Instance()->Init();
 	
 	BOOL bRet = g_InfoParser.Init( "./ServerInfo.ini" );
 	if ( !bRet ) {
@@ -35,7 +33,7 @@ BOOL LineServer::Init()
 	}
 	
 	m_pIOCPServer = new IOCPServer;
-
+	
 	SYNCHANDLER_DESC desc[1];
 	
 	desc[0].dwSyncHandlerKey			= SERVER_SYNCHANDLER;
@@ -56,15 +54,15 @@ BOOL LineServer::Init()
 		return FALSE;
 	}
 
-	// Agent Server
-	m_pLoginServerSession = LineFactory::Instance()->AllocLoginServerSession();
+	// Login Server
+	m_pLoginServerSession = KeyvFactory::Instance()->AllocLoginServerSession();
 	if ( m_pLoginServerSession ) {
 		SERVER_INFO info = g_InfoParser.GetServerInfo( LOGIN_SERVER );
 		m_pLoginServerSession->SetAddr( info.m_strIp, info.m_dwPort ); // Login Port 7010
 	}
 	
 	// DB Server
-	m_pDBServerSession = LineFactory::Instance()->AllocDBServerSession();
+	m_pDBServerSession = KeyvFactory::Instance()->AllocDBServerSession();
 	if ( m_pDBServerSession ) {
 		SERVER_INFO info = g_InfoParser.GetServerInfo( DB_SERVER );
 		m_pDBServerSession->SetAddr( info.m_strIp, info.m_dwPort ); // DB Port 7030
@@ -73,7 +71,7 @@ BOOL LineServer::Init()
 	return TRUE;	
 }
 
-BOOL LineServer::ConnectToServer( ServerSession * pSession, char * pszIP, WORD wPort )
+BOOL KeyvServer::ConnectToServer( ServerSession * pSession, char * pszIP, WORD wPort )
 {
 	if (pSession == NULL) {
 		return FALSE;
@@ -83,7 +81,7 @@ BOOL LineServer::ConnectToServer( ServerSession * pSession, char * pszIP, WORD w
 	return m_pIOCPServer->Connect( SERVER_SYNCHANDLER, (NetworkObject *)pSession, pszIP, wPort );
 }
 
-BOOL LineServer::MaintainConnection()
+BOOL KeyvServer::MaintainConnection()
 {
 	if (m_bShutdown) {
 		return TRUE;
@@ -102,7 +100,7 @@ BOOL LineServer::MaintainConnection()
 	}
 }
 
-BOOL LineServer::Update( DWORD dwDeltaTick )
+BOOL KeyvServer::Update( DWORD dwDeltaTick )
 {
 	if(m_pIOCPServer)
 	{
@@ -120,7 +118,7 @@ BOOL LineServer::Update( DWORD dwDeltaTick )
 //	
 //}
 
-BOOL LineServer::SendToLoginServer( BYTE * pMsg, WORD wSize)
+BOOL KeyvServer::SendToLoginServer( BYTE * pMsg, WORD wSize)
 {
 	printf("[LineServer::SendToLoginServer]\n");
 	
@@ -130,7 +128,7 @@ BOOL LineServer::SendToLoginServer( BYTE * pMsg, WORD wSize)
 	return FALSE;
 }
 
-BOOL LineServer::SendToDBServer(BYTE * pMsg, WORD wSize)
+BOOL KeyvServer::SendToDBServer(BYTE * pMsg, WORD wSize)
 {
 	printf("[LineServer::SendToDBServer]\n");
 	

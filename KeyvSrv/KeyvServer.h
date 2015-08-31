@@ -1,23 +1,23 @@
-#ifndef _LINE_SERVER_H_INCLUDED_
-#define _LINE_SERVER_H_INCLUDED_
+#ifndef _KEYVSERVER_H_INCLUDED_
+#define _KEYVSERVER_H_INCLUDED_
 
 #include <Common.h>
 #include <Utility.h>
 #include <Network.h>
 #include <Public.h>
 
-#include "LineFactory.h"
+#include "KeyvFactory.h"
 
 using namespace std;
 
-class LineServer
+class KeyvServer
 {
 	enum { CLIENT_SYNCHANDLER = 0, SERVER_SYNCHANDLER = 1, };
 	
 public:
-	LineServer(void);
-	~LineServer(void);
-
+	KeyvServer(void);
+	~KeyvServer(void);
+	
 	// 初始化
 	BOOL Init();
 	
@@ -33,20 +33,21 @@ public:
 	// 释放
 	//void Release();
 		
+	// 释放	
 	BOOL SendToLoginServer( BYTE * pMsg, WORD wSize );
-	
 	BOOL SendToDBServer( BYTE * pMsg, WORD wSize );
 	
 private:
+	
 	BOOL m_bShutdown;
 	
 	IOCPServer * m_pIOCPServer;
 	
-	//
+	// DB and Login
 	ServerSession * m_pDBServerSession;
 	ServerSession * m_pLoginServerSession;
 };
 
-extern LineServer * g_LineServer;
+extern KeyvServer * g_pKeyvServer;
 
 #endif // _LINE_SERVER_H_INCLUDED_

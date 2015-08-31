@@ -16,7 +16,12 @@ public:
 	// 初始化
 	BOOL	Init(char * strFileName);
 
-	BOOL	GetString( char * strSection, char * szName, char * szDefault, char *pszValue);
+	BOOL	GetString( 
+				const char * strSection, 
+				const char * szName, 
+				const char * szDefault, 
+					  char * pszValue );
+				
 	int 	GetInt( char * strSection, char * szName, char * szDefault );
 
 	// 获取服务器端口信息
