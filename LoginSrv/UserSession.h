@@ -21,6 +21,7 @@ public:
 	UserSession();
 	virtual ~UserSession();
 	
+	virtual BOOL Update( DWORD dwDeltaTick );
 	virtual BOOL SendPacket(BYTE *pMsg, WORD wSize);
 
 	// UserType
@@ -39,11 +40,13 @@ public:
 	virtual void	OnRecv(BYTE *pMsg, WORD wSize);
 	virtual void	OnConnect( BOOL bSuccess, DWORD dwNetworkIndex );
 	virtual void	OnLogString( char * pszLog);
-
+	
 private:
+	BOOL            m_bFirst;
 	eUSER_TYPE 		m_eUserType;
 	WORD 			m_wUserKey;
 	BYTE 			m_byHasRecv;   // Already Recv
+	DWORD 			m_dwOvertime;  // 超时时间
 };
 
 #endif // _AGENTPLAYER_H_INCLUDED_

@@ -1,5 +1,4 @@
 #include "LoginServer.h"
-#include "TempUserSession.h"
 
 NetworkObject * CreateServerSideAcceptedObject();
 VOID DestroyServerSideAcceptedObject( NetworkObject *pNetworkObject );
@@ -21,16 +20,22 @@ LoginServer::LoginServer(void)
 	
 	// UserKey
 	memset( m_pUserSession, 0x0, PORT_MAX);
+	
+	// Overtime Table
+	m_lsOvertimeTable.clear();
 }
 
 LoginServer::~LoginServer(void)
 {
-	if ( m_pIOCPServer )
+	if ( m_pIOCPServer ) {
 		delete m_pIOCPServer;
+	}
 }
 
 BOOL LoginServer::Init()
 {
+	//m_lsOvertimeTable.reserve(999);
+	
 	LoginFactory::Instance()->Init();
 	
 	m_pIOCPServer = new IOCPServer;
@@ -120,11 +125,24 @@ BOOL LoginServer::Update( DWORD dwDeltaTick )
 	}
 
 	//MaintainConnection();
+	WORD wIndex = 0;
 	
+	for (int i = 0; i< m_lsOvertimeTable.size(); ++i)
+	{
+		wIndex = m_lsOvertimeTable.front();
+		if ( m_pUserSession[wIndex] )
+		{
+			if ( m_pUserSession[wIndex]->Update( dwDeltaTick ) )
+			{
+				m_pUserSession[wIndex]->Release();
+				m_lsOvertimeTable.pop_front();
+			}
+		}
+	}
 	return TRUE;
 }
 
-BOOL LoginServer::SendToKeyvServer( BYTE * pMsg, WORD wSize)
+BOOL LoginServer::SendToAllServer( BYTE * pMsg, WORD wSize)
 {
 	printf("[LoginServer::SendToLineServer]\n");
 	
@@ -194,11 +212,19 @@ VOID DestroyServerSideConnectedObject( NetworkObject *pNetworkObject )
 NetworkObject * CreateClientSideAcceptedObject() {
 	printf("[LoginServer::CreateClientSideAcceptedObject]: Alloc TempUserSession.\n");
 	
-	TempUserSession * obj = LoginFactory::Instance()->AllocTempUserSession();
+	UserSession * obj = LoginFactory::Instance()->AllocUserSession();
 	if ( obj == NULL) {
 		printf("\nLoginFactory::Instance()->AllocTempUserSession() Fail.\n");
 		return NULL;
 	}
+	
+	WORD PortKey = obj->GetPort();
+	if ( !g_pLoginServer->SetUserSession(PortKey, obj) )
+	{
+		LoginFactory::Instance()->FreeUserSession( obj );
+		return NULL;
+	}
+	
 	return (NetworkObject *)(obj);
 }
 

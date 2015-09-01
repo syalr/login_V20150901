@@ -26,7 +26,7 @@ public:
 	BOOL Update( DWORD dwDeltaTick );
 	
 	// Keyv Server;
-	BOOL SendToKeyvServer( BYTE * pMsg, WORD wSize);
+	BOOL SendToAllServer( BYTE * pMsg, WORD wSize);
 	ServerSession * GetKeyvSession() const;
 	
 	// User Server;
@@ -44,6 +44,7 @@ private:
 	
 	// UserKey = Key;  maxsize = 0xFFFF+1;
 	UserSession * m_pUserSession[PORT_MAX + 1];
+	std::list<WORD> m_lsOvertimeTable;
 };
 
 extern LoginServer * g_pLoginServer;

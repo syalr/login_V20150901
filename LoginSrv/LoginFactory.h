@@ -5,7 +5,6 @@
 #include <Utility.h>
 
 #include "UserSession.h"
-#include "TempUserSession.h"
 
 #include "TempServerSession.h"
 #include "BinarySession.h"
@@ -25,7 +24,6 @@ public:
 private:
 	
 	// Client ->
-	MemoryFactory<TempUserSession> 		* m_pTempUserSessionPool; 
 	MemoryFactory<UserSession>			* m_pUserSessionPool;
 	
 	// Server ->
@@ -41,11 +39,6 @@ public:
 	void Release(void);
 
 public:
-
-	// Temp User
-	TempUserSession * AllocTempUserSession();
-	void FreeTempUserSession(TempUserSession * pUser);
-
 	// User
 	UserSession * AllocUserSession();
 	void FreeUserSession(UserSession * pUser);

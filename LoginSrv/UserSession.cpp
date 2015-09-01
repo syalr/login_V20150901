@@ -3,6 +3,7 @@
 #include "LoginFactory.h"
 
 UserSession::UserSession()
+: m_bFirst(TRUE)
 {	
 	m_eUserType = UT_TEMP_USER;
 }
@@ -30,13 +31,24 @@ void  UserSession::SetUserKey(WORD dwKey)
 /************ protected *************/
 void UserSession::Init()
 {
-	m_wUserKey = 0;
-	m_byHasRecv   = 0;
+	m_wUserKey 		= 0;
+	m_byHasRecv   	= 0;
+	m_bFirst 		= TRUE;
+	m_dwOvertime    = 0;
+}
+
+BOOL UserSession::Update( DWORD dwDeltaTick )
+{
+	if ( m_dwOvertime > dwDeltaTick ) {
+		m_dwOvertime -= dwDeltaTick;
+		return TRUE;
+	}
+	return FALSE;
 }
 
 void UserSession::Release()
 {
-	m_eUserType = UT_TEMP_USER;
+	m_bFirst = TRUE;
 	
 	m_byHasRecv = 0;
 	
@@ -51,7 +63,7 @@ void UserSession::Release()
 
 void UserSession::OnAccept( DWORD dwNetworkIndex )
 {
-	
+
 }
 
 void UserSession::OnDisconnect()
@@ -61,23 +73,35 @@ void UserSession::OnDisconnect()
 
 void UserSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
+	printf(">>>> [TempUserSession::OnRecv]\n");
+	
 	// Connected warning.
-	if (this->m_byHasRecv == 0) 
+	if ( m_bFirst == FALSE ) {
+		this->Release();
+		return;
+	}
+	
+	// Connected warning.
+	BYTE msgPlus[1024] = {0};
+	
+	if ( this->m_byHasRecv == 0 ) 
 	{
-		switch( m_eUserType )
+		m_bFirst = FALSE;
+		
+		// Alloc Port 
+		WORD PortKey = this->GetPort();
+		if ( PortKey != 0 )
 		{
-		case UT_KEYV_USER:
-			{
-				g_pLoginServer->SendToKeyvServer(pMsg, wSize);
-				break;
-			}
-		default:
-			{
-				// Connected warning.
+			MSG_ENTERSERVER_SYN * recvMsg = (MSG_ENTERSERVER_SYN *)pMsg;
+			
+			if ( wSize < (sizeof(MSG_BASE) + 1) ) {
 				this->Release();
-				
-				break;
+				return;
 			}
+			
+			memcpy(msgPlus, &m_wUserKey, sizeof(m_wUserKey));
+			memcpy(msgPlus + sizeof(m_wUserKey), pMsg, wSize);
+			g_pLoginServer->SendToAllServer(msgPlus, wSize + sizeof(m_wUserKey));
 		}
 	}
 	

@@ -3,8 +3,7 @@
 LoginFactory::LoginFactory()
 {
 	// Client ->
-	m_pTempUserSessionPool		= NULL; 
-	m_pUserSessionPool		= NULL; 
+	m_pUserSessionPool			= NULL; 
 	
 	// Server ->
 	m_pTempServerSessionPool	= NULL; 
@@ -17,7 +16,6 @@ LoginFactory::LoginFactory()
 LoginFactory::~LoginFactory()
 {
 	// Client ->
-	if (m_pTempUserSessionPool) 	delete m_pTempUserSessionPool;
 	if (m_pUserSessionPool) 		delete m_pUserSessionPool;
 	
 	// Server ->
@@ -31,9 +29,7 @@ LoginFactory::~LoginFactory()
 void LoginFactory::Init()
 {
 	// Client ->
-	m_pTempUserSessionPool	= new MemoryFactory<TempUserSession>;
 	m_pUserSessionPool		= new MemoryFactory<UserSession>;
-	m_pTempUserSessionPool->Initialize(99,1); 		// ???
 	m_pUserSessionPool->Initialize(999,1); 		// ???
 	
 	// Server ->
@@ -47,19 +43,6 @@ void LoginFactory::Init()
 	m_pHttpSessionPool->Initialize(1,1); 		// ???
 	m_pJsonSessionPool->Initialize(1,1);
 	m_pKeyvSessionPool->Initialize(1,1); 	// ???
-}
-
-// Temp User
-TempUserSession * LoginFactory::AllocTempUserSession() {
-	assert ( m_pTempUserSessionPool );
-	TempUserSession * pSession = m_pTempUserSessionPool->Alloc();
-	if ( pSession != NULL ) {
-		pSession->Release();
-	}
-	return pSession;
-}
-void LoginFactory::FreeTempUserSession(TempUserSession * pServerSession) {
-	return m_pTempUserSessionPool->Free(pServerSession);
 }
 
 // User

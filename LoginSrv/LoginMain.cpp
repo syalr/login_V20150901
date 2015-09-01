@@ -10,11 +10,15 @@ int main(int argc, char ** argv)
 		return 0;
 	}
 	
-	int nShutdown = 1;
+	DWORD dwTicket = 0;
+	int nShutdown  = 1;
+	
 	while( nShutdown ) {
 		usleep(20);
 
-		if ( !g_pLoginServer->Update( 0 ) ) {
+		dwTicket = Session::GetTickCount();
+		
+		if ( !g_pLoginServer->Update( dwTicket ) ) {
 			break;
 		}
 	}

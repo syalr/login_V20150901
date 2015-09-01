@@ -29,7 +29,6 @@ OBJS = 	Utility/Yond_mutex.o \
 		LoginSrv/LoginFactory.o \
 		LoginSrv/ServerSession.o \
 		LoginSrv/TempServerSession.o \
-		LoginSrv/TempUserSession.o \
 		LoginSrv/UserSession.o \
 		LoginSrv/LoginServer.o \
 		LoginSrv/LoginMain.o
