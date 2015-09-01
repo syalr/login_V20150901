@@ -30,8 +30,9 @@ public:
 	ServerSession * GetKeyvSession() const;
 	
 	// User Server;
-	BOOL SendToUserServer( BYTE * pMsg, WORD wSize );
-	BOOL SetUserSession(WORD wIndex, UserSession * pSession);
+	BOOL SendToClient( BYTE * pMsg, WORD wSize );
+	BOOL SetUserSession( WORD wIndex, UserSession * pSession );
+	BOOL OvertimeClear( DWORD dwDeltaTick );
 	
 private:
 	BOOL m_bShutdown;
@@ -44,6 +45,9 @@ private:
 	
 	// UserKey = Key;  maxsize = 0xFFFF+1;
 	UserSession * m_pUserSession[PORT_MAX + 1];
+	
+	// Overtime Process;
+	DWORD m_dwMaxOvertime;
 	std::list<WORD> m_lsOvertimeTable;
 };
 

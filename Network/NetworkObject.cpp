@@ -5,6 +5,7 @@
 NetworkObject::NetworkObject()
 {
 	m_pSession = NULL;
+	m_bPackageHander = TRUE; 
 }
 
 NetworkObject::~NetworkObject()

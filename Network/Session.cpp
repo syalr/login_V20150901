@@ -144,12 +144,20 @@ BOOL Session::DoSend(SyncHandler * pSync)
 	if (m_bCanSend && m_bRemove ==FALSE) 
 	{
 		BYTE * buf;
-		int len;
+		int len, lenEx = 0;
+		WORD hander = 0;
+		
+		lenEx = 0;
+		if ( m_pNetworkObject != NULL ) {
+			if ( m_pNetworkObject->IsPackageHeader() == FALSE ) {
+				lenEx = sizeof(WORD);
+			}
+		}
 		
 		if (m_pSendBuffer->GetSendParam( &buf, len ) == FALSE)
 			return TRUE;
 		
-		int ret = send( m_socket, buf, len, 0);
+		int ret = send( m_socket, (buf + lenEx), ( len - lenEx ), 0);
 		if (ret == SOCKET_ERROR)
 		{
 			if (errno == EAGAIN)
@@ -167,7 +175,8 @@ BOOL Session::DoSend(SyncHandler * pSync)
 				pSync->ModEpollEvent(this, event);
 			}
 		}
-		m_pSendBuffer->Completion(ret);
+		
+		m_pSendBuffer->Completion( (ret + lenEx) );
 	}
 }
 
@@ -176,7 +185,8 @@ BOOL Session::DoRecv()
 	Yond_guard gd(m_lockSend);
 	
 	BYTE * buf;
-	int ret = 0, len = 0;
+	int ret = 0, len = 0, lenEx = 0;
+	WORD hander = 0; 
 	
 	while(m_bRemove == FALSE) 
 	{
@@ -186,7 +196,14 @@ BOOL Session::DoRecv()
 			return FALSE;
 		}
 		
-		ret = recv(m_socket, buf, len, 0);
+		lenEx = 0;
+		if ( m_pNetworkObject != NULL ) {
+			if ( m_pNetworkObject->IsPackageHeader() == FALSE ) {
+				lenEx = sizeof(WORD);
+			}
+		}
+		
+		ret = recv(m_socket, (buf + lenEx), ( len - lenEx ), 0);
 		if (ret == SOCKET_ERROR)
 		{
 			if (errno == EAGAIN) {
@@ -202,7 +219,9 @@ BOOL Session::DoRecv()
 			return FALSE;
 		}
 		
-		m_pRecvBuffer->Completion(ret);
+		hander = ret;
+		memcpy( buf, &hander, lenEx );
+		m_pRecvBuffer->Completion( ( ret + lenEx ) );
 		
 		if (ret < len)
 			break;

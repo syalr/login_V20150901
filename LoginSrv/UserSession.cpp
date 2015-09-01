@@ -34,15 +34,20 @@ void UserSession::Init()
 	m_wUserKey 		= 0;
 	m_byHasRecv   	= 0;
 	m_bFirst 		= TRUE;
-	m_dwOvertime    = 0;
+	m_dwOvertime    = Session::GetTickCount() + 12000;
+	this->NotPackageHeader();
 }
 
 BOOL UserSession::Update( DWORD dwDeltaTick )
 {
-	if ( m_dwOvertime > dwDeltaTick ) {
-		m_dwOvertime -= dwDeltaTick;
-		return TRUE;
+	if ( m_bFirst == TRUE )
+	{
+		if ( dwDeltaTick > m_dwOvertime ) {
+			m_dwOvertime -= dwDeltaTick;
+			return TRUE;
+		}
 	}
+	
 	return FALSE;
 }
 
@@ -63,17 +68,25 @@ void UserSession::Release()
 
 void UserSession::OnAccept( DWORD dwNetworkIndex )
 {
-
+	WORD PortKey = this->GetPort();
+	if ( PortKey != 0 )
+	{
+		this->SetUserKey(PortKey);
+		g_pLoginServer->SetUserSession(PortKey, this);
+		LoginFactory::Instance()->FreeUserSession( this );
+		return;
+	}
 }
 
 void UserSession::OnDisconnect()
 {
+	printf(">>>> [UserSession::OnDisconnect]\n");
 	NetworkObject::OnDisconnect();
 }
 
 void UserSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
-	printf(">>>> [TempUserSession::OnRecv]\n");
+	printf(">>>> [UserSession::OnRecv]\n");
 	
 	// Connected warning.
 	if ( m_bFirst == FALSE ) {
@@ -81,27 +94,23 @@ void UserSession::OnRecv(BYTE *pMsg, WORD wSize)
 		return;
 	}
 	
+	// 清理时间
+	m_dwOvertime = Session::GetTickCount() + 12000;
+	
 	// Connected warning.
 	BYTE msgPlus[1024] = {0};
-	
 	if ( this->m_byHasRecv == 0 ) 
 	{
 		m_bFirst = FALSE;
 		
 		// Alloc Port 
-		WORD PortKey = this->GetPort();
-		if ( PortKey != 0 )
+		if ( m_wUserKey != 0 )
 		{
-			MSG_ENTERSERVER_SYN * recvMsg = (MSG_ENTERSERVER_SYN *)pMsg;
-			
-			if ( wSize < (sizeof(MSG_BASE) + 1) ) {
-				this->Release();
-				return;
-			}
-			
-			memcpy(msgPlus, &m_wUserKey, sizeof(m_wUserKey));
-			memcpy(msgPlus + sizeof(m_wUserKey), pMsg, wSize);
-			g_pLoginServer->SendToAllServer(msgPlus, wSize + sizeof(m_wUserKey));
+			MSG_BASE_FORWARD xMsg;
+			xMsg.m_wParameter = m_wUserKey;
+			memcpy( msgPlus, &xMsg, sizeof(xMsg) );
+			memcpy( msgPlus, pMsg, wSize );
+			g_pLoginServer->SendToAllServer( msgPlus, wSize + sizeof(MSG_BASE_FORWARD) );
 		}
 	}
 	

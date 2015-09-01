@@ -10,6 +10,8 @@ VOID DestroyClientSideConnectedObject( NetworkObject * pNetworkObject );
 
 LoginServer * g_pLoginServer = NULL;
 
+#define DF_MAX_OVERTIME 12000;
+
 LoginServer::LoginServer(void)
 {
 	m_bShutdown		= FALSE;
@@ -23,6 +25,8 @@ LoginServer::LoginServer(void)
 	
 	// Overtime Table
 	m_lsOvertimeTable.clear();
+	
+	m_dwMaxOvertime = DF_MAX_OVERTIME;
 }
 
 LoginServer::~LoginServer(void)
@@ -124,22 +128,37 @@ BOOL LoginServer::Update( DWORD dwDeltaTick )
 		m_pIOCPServer->Update();
 	}
 
-	//MaintainConnection();
-	WORD wIndex = 0;
+	// MaintainConnection();
 	
+	if ( dwDeltaTick > m_dwMaxOvertime ) 
+	{
+		printf( "[Update %d = %d] \n", m_dwMaxOvertime, dwDeltaTick);
+		OvertimeClear(dwDeltaTick);
+		m_dwMaxOvertime = dwDeltaTick + DF_MAX_OVERTIME;
+	}
+	
+	return TRUE;
+}
+
+BOOL LoginServer::OvertimeClear( DWORD dwDeltaTick )
+{
+	WORD wIndex = 0;
+	UserSession * pSession = NULL;
 	for (int i = 0; i< m_lsOvertimeTable.size(); ++i)
 	{
 		wIndex = m_lsOvertimeTable.front();
-		if ( m_pUserSession[wIndex] )
+		pSession = m_pUserSession[wIndex];
+		if ( pSession != NULL )
 		{
-			if ( m_pUserSession[wIndex]->Update( dwDeltaTick ) )
+			printf(" [ OvertimeClear = %d ] \n", wIndex);
+			if ( pSession->Update( dwDeltaTick ) )
 			{
-				m_pUserSession[wIndex]->Release();
+				pSession->Release();
+				m_pUserSession[wIndex] = NULL;
 				m_lsOvertimeTable.pop_front();
 			}
 		}
 	}
-	return TRUE;
 }
 
 BOOL LoginServer::SendToAllServer( BYTE * pMsg, WORD wSize)
@@ -158,7 +177,7 @@ ServerSession * LoginServer::GetKeyvSession() const
 }
 
 // User Server;
-BOOL LoginServer::SendToUserServer( BYTE * pMsg, WORD wSize )
+BOOL LoginServer::SendToClient( BYTE * pMsg, WORD wSize )
 {
 	MSG_BASE_FORWARD * pBase = (MSG_BASE_FORWARD *) pMsg;
 	
@@ -170,7 +189,8 @@ BOOL LoginServer::SendToUserServer( BYTE * pMsg, WORD wSize )
 	UserSession * pSession = m_pUserSession[wIndex];
 	if ( pSession != NULL ) {
 		WORD sendSize =  wSize - sizeof(MSG_BASE_FORWARD);
-		BYTE * sendMsg = (BYTE *) ( pBase + sizeof(MSG_BASE_FORWARD) );
+		BYTE * sendMsg = (BYTE *) ( pBase);
+		sendMsg += sizeof(MSG_BASE_FORWARD);
 		pSession->Send(sendMsg, sendSize);
 	}
 }
@@ -182,6 +202,11 @@ BOOL LoginServer::SetUserSession(WORD wIndex, UserSession * pSession)
 	}
 	
 	m_pUserSession[wIndex] = pSession;
+	
+	m_lsOvertimeTable.push_back(wIndex);
+	
+	printf(" [ SetUserSession = %d ] \n", wIndex);
+	
 	return TRUE;
 }
 
@@ -210,7 +235,7 @@ VOID DestroyServerSideConnectedObject( NetworkObject *pNetworkObject )
 
 // 客户端
 NetworkObject * CreateClientSideAcceptedObject() {
-	printf("[LoginServer::CreateClientSideAcceptedObject]: Alloc TempUserSession.\n");
+	printf("[LoginServer::CreateClientSideAcceptedObject]: Alloc UserSession.\n");
 	
 	UserSession * obj = LoginFactory::Instance()->AllocUserSession();
 	if ( obj == NULL) {
@@ -218,13 +243,7 @@ NetworkObject * CreateClientSideAcceptedObject() {
 		return NULL;
 	}
 	
-	WORD PortKey = obj->GetPort();
-	if ( !g_pLoginServer->SetUserSession(PortKey, obj) )
-	{
-		LoginFactory::Instance()->FreeUserSession( obj );
-		return NULL;
-	}
-	
+	obj->Init();
 	return (NetworkObject *)(obj);
 }
 

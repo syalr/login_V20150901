@@ -19,7 +19,7 @@ void KeyvSession::Release()
 
 void KeyvSession::OnRecv(BYTE * pMsg, WORD wSize)
 {
-	g_pLoginServer->SendToUserServer(pMsg, wSize);
+	g_pLoginServer->SendToClient(pMsg, wSize);
 }
 
 void KeyvSession::OnLogString( char * pszLog)

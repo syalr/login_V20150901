@@ -87,7 +87,8 @@ private:
 	int 			m_iCategory;
 	int 			m_iProtocol;
 	int 			m_iSize;
-	
+
+protected:
 	Yond_mutex		m_lockRecv;
 	Yond_mutex      m_lockSend;
 	BOOL			m_bCanSend;
