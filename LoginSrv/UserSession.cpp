@@ -2,6 +2,9 @@
 #include "LoginServer.h"
 #include "LoginFactory.h"
 
+DWORD UserSession::m_dwClientDelay = 0xFFFFFFFF;
+DWORD UserSession::m_dwServerDelay = 0xFFFFFFFF;
+
 UserSession::UserSession()
 : m_bFirst(TRUE)
 {	
@@ -27,43 +30,53 @@ void  UserSession::SetUserKey(WORD dwKey)
 	m_wUserKey = dwKey;
 }
 
-
 /************ protected *************/
 void UserSession::Init()
 {
 	m_wUserKey 		= 0;
-	m_byHasRecv   	= 0;
 	m_bFirst 		= TRUE;
-	m_dwOvertime    = Session::GetTickCount() + 12000;
+	
+	DWORD dwCurrent = Session::GetTickCount();
+	m_dwOvertime    = dwCurrent + UserSession::m_dwClientDelay;
+	printf( "[UserSession::Init %d] \n", m_dwOvertime);
+	
 	this->NotPackageHeader();
 }
 
 BOOL UserSession::Update( DWORD dwDeltaTick )
 {
-	if ( m_bFirst == TRUE )
-	{
-		if ( dwDeltaTick > m_dwOvertime ) {
-			m_dwOvertime -= dwDeltaTick;
-			return TRUE;
-		}
+	printf( "[UserSession::Update %d = %d] \n", dwDeltaTick, m_dwOvertime);
+	
+	// Count Down;
+	if ( dwDeltaTick > m_dwOvertime ) {
+		Disconnect(TRUE);
+		return TRUE;
 	}
 	
 	return FALSE;
 }
 
-void UserSession::Release()
+void UserSession::CloseSession()
 {
+	printf(" [ UserSession::CloseSession ] \n");
+	
+	if ( m_pSession != NULL) {
+		m_pSession->CloseSocket();
+	}
+	
 	m_bFirst = TRUE;
 	
-	m_byHasRecv = 0;
+}
+
+void UserSession::Release()
+{
+	printf(" [ UserSession::Release ] \n");
 	
-	// 释放连接
-	this->OnDisconnect();
-	
-	// 释放服务器
-	LoginFactory::Instance()->FreeUserSession(this);
+	m_bFirst = TRUE;
 	
 	g_pLoginServer->SetUserSession( this->m_wUserKey, NULL); 
+	
+	LoginFactory::Instance()->FreeUserSession(this);
 }
 
 void UserSession::OnAccept( DWORD dwNetworkIndex )
@@ -80,7 +93,7 @@ void UserSession::OnAccept( DWORD dwNetworkIndex )
 
 void UserSession::OnDisconnect()
 {
-	printf(">>>> [UserSession::OnDisconnect]\n");
+	printf("[UserSession::OnDisconnect]\n");
 	NetworkObject::OnDisconnect();
 }
 
@@ -94,33 +107,23 @@ void UserSession::OnRecv(BYTE *pMsg, WORD wSize)
 		return;
 	}
 	
-	// 清理时间
-	m_dwOvertime = Session::GetTickCount() + 12000;
-	
-	// Connected warning.
 	BYTE msgPlus[1024] = {0};
-	if ( this->m_byHasRecv == 0 ) 
-	{
-		m_bFirst = FALSE;
-		
-		// Alloc Port 
-		if ( m_wUserKey != 0 )
-		{
-			MSG_BASE_FORWARD xMsg;
-			xMsg.m_wParameter = m_wUserKey;
-			memcpy( msgPlus, &xMsg, sizeof(xMsg) );
-			memcpy( msgPlus, pMsg, wSize );
-			g_pLoginServer->SendToAllServer( msgPlus, wSize + sizeof(MSG_BASE_FORWARD) );
-		}
-	}
 	
 	// Connected warning.
-	if ( this->m_byHasRecv > REQUEST_SAFETY ) {
-		this->Release();
-		return;
+	m_bFirst = FALSE;
+	
+	// Alloc Port 
+	if ( m_wUserKey != 0 )
+	{
+		MSG_BASE_FORWARD xMsg;
+		xMsg.m_wParameter = m_wUserKey;
+		memcpy( msgPlus, &xMsg, sizeof(xMsg) );
+		memcpy( msgPlus, pMsg, wSize );
+		g_pLoginServer->SendToAllServer( msgPlus, wSize + sizeof(MSG_BASE_FORWARD) );
 	}
 	
-	this->m_byHasRecv++;
+	m_dwOvertime = Session::GetTickCount() + UserSession::m_dwServerDelay;
+	printf( "[UserSession::OnRecv %d = %d] \n", m_dwOvertime);
 }
 
 void UserSession::OnConnect( BOOL bSuccess, DWORD dwNetworkIndex )

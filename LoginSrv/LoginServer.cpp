@@ -8,9 +8,8 @@ NetworkObject * CreateClientSideAcceptedObject();
 VOID DestroyClientSideAcceptedObject( NetworkObject * pNetworkObject );
 VOID DestroyClientSideConnectedObject( NetworkObject * pNetworkObject );
 
-LoginServer * g_pLoginServer = NULL;
-
-#define DF_MAX_OVERTIME 12000;
+LoginServer * g_pLoginServer 		= NULL;
+DWORD LoginServer::m_dwClearDelay 	= 0xFFFFFFFF;
 
 LoginServer::LoginServer(void)
 {
@@ -25,8 +24,6 @@ LoginServer::LoginServer(void)
 	
 	// Overtime Table
 	m_lsOvertimeTable.clear();
-	
-	m_dwMaxOvertime = DF_MAX_OVERTIME;
 }
 
 LoginServer::~LoginServer(void)
@@ -85,7 +82,13 @@ BOOL LoginServer::Init()
 	
 	m_pKeyvServer = LoginFactory::Instance()->AllocKeyvSession();
 	if ( m_pKeyvServer == NULL) {
-		printf("[LoginFactory::Instance()->AllocLineServerSession] fail\n");
+		printf("[LoginFactory::Instance()->AllocKeyvSession] fail\n");
+		return FALSE;
+	}
+	
+	m_pJsonServer = LoginFactory::Instance()->AllocJsonSession();
+	if ( m_pJsonServer == NULL) {
+		printf("[LoginFactory::Instance()->AllocJsonSession] fail\n");
 		return FALSE;
 	}
 	
@@ -129,12 +132,11 @@ BOOL LoginServer::Update( DWORD dwDeltaTick )
 	}
 
 	// MaintainConnection();
-	
-	if ( dwDeltaTick > m_dwMaxOvertime ) 
+	if ( dwDeltaTick > m_dwClearOvertime ) 
 	{
-		printf( "[Update %d = %d] \n", m_dwMaxOvertime, dwDeltaTick);
-		OvertimeClear(dwDeltaTick);
-		m_dwMaxOvertime = dwDeltaTick + DF_MAX_OVERTIME;
+		// OvertimeClear(dwDeltaTick);
+		m_dwClearOvertime = dwDeltaTick + m_dwClearDelay;
+		//printf( "[LoginServer::Update %d = %d] \n", m_dwClearOvertime, dwDeltaTick);
 	}
 	
 	return TRUE;
@@ -142,22 +144,26 @@ BOOL LoginServer::Update( DWORD dwDeltaTick )
 
 BOOL LoginServer::OvertimeClear( DWORD dwDeltaTick )
 {
+	printf(" [ LoginServer::OvertimeClear dwDeltaTick= %d ] \n", dwDeltaTick);
+	printf(" [ LoginServer::OvertimeClear size = %d ] \n", m_lsOvertimeTable.size());
+	
 	WORD wIndex = 0;
 	UserSession * pSession = NULL;
-	for (int i = 0; i< m_lsOvertimeTable.size(); ++i)
-	{
+	for (int i = 0; i< m_lsOvertimeTable.size(); ++i) {	
 		wIndex = m_lsOvertimeTable.front();
+		if ( wIndex==0 ) {
+			m_lsOvertimeTable.pop_front();
+			continue;
+		}		
+		printf(" [ LoginServer::OvertimeClear wIndex = %d ] \n", wIndex);
 		pSession = m_pUserSession[wIndex];
-		if ( pSession != NULL )
-		{
-			printf(" [ OvertimeClear = %d ] \n", wIndex);
-			if ( pSession->Update( dwDeltaTick ) )
-			{
-				pSession->Release();
-				m_pUserSession[wIndex] = NULL;
-				m_lsOvertimeTable.pop_front();
+		if ( pSession != NULL ) {
+			printf(" [ LoginServer::OvertimeClear pSession = %d ] \n", pSession);
+			if ( pSession->Update( dwDeltaTick ) ) {
+				pSession->CloseSession();
 			}
 		}
+		m_lsOvertimeTable.pop_front();
 	}
 }
 
@@ -168,12 +174,18 @@ BOOL LoginServer::SendToAllServer( BYTE * pMsg, WORD wSize)
 	if ( m_pKeyvServer ) {
 		return m_pKeyvServer->Send( pMsg, wSize );
 	}
+	
+	if ( m_pJsonServer ) {
+		return m_pJsonServer->Send( pMsg, wSize );
+	}
 	return FALSE;
 }
 
-ServerSession * LoginServer::GetKeyvSession() const
-{
+ServerSession * LoginServer::GetKeyvSession() const {
 	return m_pKeyvServer;
+}
+ServerSession * LoginServer::GetJsonSession() const {
+	return m_pJsonServer;
 }
 
 // User Server;
@@ -197,15 +209,23 @@ BOOL LoginServer::SendToClient( BYTE * pMsg, WORD wSize )
 
 BOOL LoginServer::SetUserSession(WORD wIndex, UserSession * pSession)
 {
+	printf(" [LoginServer::SetUserSession] \n");
+	
 	if ( wIndex == 0 ) {
 		return FALSE;
 	}
 	
 	m_pUserSession[wIndex] = pSession;
 	
-	m_lsOvertimeTable.push_back(wIndex);
+	printf(" [ LoginServer::SetUserSession pSession = %d ] \n", pSession);
+			
+	if ( pSession != NULL ) {
+		m_lsOvertimeTable.push_back(wIndex);
+		for (int i = 0; i< m_lsOvertimeTable.size(); ++i)
+			printf(" [ LoginServer::SetUserSession size = %d ] \n", m_lsOvertimeTable.size());		
+	}
 	
-	printf(" [ SetUserSession = %d ] \n", wIndex);
+	printf(" [LoginServer::SetUserSession wIndex = %d ] \n", wIndex);
 	
 	return TRUE;
 }

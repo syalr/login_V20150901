@@ -8,6 +8,6 @@
 
 #include "Yond_md5.h"
 #include "Yond_drng.h"
-
+#include "JsonParser.h"
 
 #endif // _PUBLIC_H_INCLUDED_

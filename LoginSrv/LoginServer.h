@@ -28,6 +28,7 @@ public:
 	// Keyv Server;
 	BOOL SendToAllServer( BYTE * pMsg, WORD wSize);
 	ServerSession * GetKeyvSession() const;
+	ServerSession * GetJsonSession() const;
 	
 	// User Server;
 	BOOL SendToClient( BYTE * pMsg, WORD wSize );
@@ -43,12 +44,17 @@ private:
 	// Keyv Server;
 	ServerSession *m_pKeyvServer;
 	
+	// Json Server;
+	ServerSession *m_pJsonServer;
+	
 	// UserKey = Key;  maxsize = 0xFFFF+1;
 	UserSession * m_pUserSession[PORT_MAX + 1];
 	
+public:
 	// Overtime Process;
-	DWORD m_dwMaxOvertime;
-	std::list<WORD> m_lsOvertimeTable;
+	static DWORD 		m_dwClearDelay;
+	DWORD 				m_dwClearOvertime;
+	std::list<WORD> 	m_lsOvertimeTable;
 };
 
 extern LoginServer * g_pLoginServer;

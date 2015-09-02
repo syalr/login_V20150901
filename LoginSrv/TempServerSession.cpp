@@ -38,13 +38,30 @@ void TempServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 	case KEYV_SERVER:
 		{
 			ServerSession * Obj = g_pLoginServer->GetKeyvSession();
-			assert( Obj == NULL );
+			assert( Obj );
 			
 			Session * pSession = this->m_pSession;
 			if ( pSession != NULL ) 
 			{
 				m_pSession->UnbindNetworkObject();
 				pSession->BindNetworkObject(Obj);
+				
+				Obj->Init();
+			}
+			break;
+		}
+	case JSON_SERVER:
+		{
+			ServerSession * Obj = g_pLoginServer->GetJsonSession();
+			assert( Obj );
+			
+			Session * pSession = this->m_pSession;
+			if ( pSession != NULL ) 
+			{
+				m_pSession->UnbindNetworkObject();
+				pSession->BindNetworkObject(Obj);
+				
+				Obj->Init();
 			}
 			break;
 		}

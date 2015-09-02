@@ -13,8 +13,12 @@
 // 预登陆
 struct MSG_PRELOGIN_REQ : public MSG_BASE_FORWARD
 {
-	BYTE 	m_byUsername[32];
-	BYTE 	m_byPassword[32];
+	DWORD 	m_dwAccessID;
+	BYTE 	m_byUsername[33];
+	BYTE 	m_byPassword[33];
+	BYTE    m_bySshKey[33];
+	DWORD   m_dwGameID;
+	BYTE    m_dwLoginType;
 	
 	MSG_PRELOGIN_REQ() 
 	{

@@ -35,10 +35,12 @@ struct MSG_BASE_FORWARD : public MSG_BASE
 		WORD	m_wParameter;
 		BYTE	m_byParameter;
 	};
-
+	
+	BYTE m_byBinaryFlag;
 	MSG_BASE_FORWARD()
 	{
-		m_dwParameter = 0;
+		m_dwParameter  = 0;
+		m_byBinaryFlag = 0;
 	}
 };
 

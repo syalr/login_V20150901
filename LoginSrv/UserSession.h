@@ -32,6 +32,8 @@ public:
 	WORD GetUserKey() const;
 	void SetUserKey(WORD dwKey);
 	
+	void CloseSession();
+	
 public:
 	virtual void 	Init();
 	virtual void 	Release();
@@ -42,10 +44,14 @@ public:
 	virtual void	OnLogString( char * pszLog);
 	
 private:
-	BOOL            m_bFirst;
 	eUSER_TYPE 		m_eUserType;
+	BOOL            m_bFirst;
 	WORD 			m_wUserKey;
-	BYTE 			m_byHasRecv;   // Already Recv
+	
+public:
+	// static DWORD    m_byCloseDelay; 
+	static DWORD    m_dwClientDelay;  
+	static DWORD    m_dwServerDelay;
 	DWORD 			m_dwOvertime;  // 超时时间
 };
 
