@@ -26,6 +26,8 @@ void JsonSession::Release()
 
 void JsonSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
+	
+	
 	g_pLoginServer->SendToClient(pMsg, wSize);
 }
 

@@ -3,17 +3,7 @@
 
 class Json_PreLoginANC
 {
-	enum
-	{
-		eUNKNOWN 		= 0x01,
-		eUSERID			= 0x02,
-		eUSERNAME 		= 0x04,
-		ePASSWORD 		= 0x08,
-		eSSHKEY 		= 0x0F,
-		eGAMEID 		= 0x10,
-		ePROTOCOL 		= 0x20,
-	};
-
+	
 public:
 
 	Json_PreLoginANC();
