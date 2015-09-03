@@ -1,5 +1,5 @@
-#ifndef _AGENTSERVER_H_INCLUDED_
-#define _AGENTSERVER_H_INCLUDED_
+#ifndef _DBSERVER_H_INCLUDED_
+#define _DBSERVER_H_INCLUDED_
 
 #include <Utility.h>
 #include <Common.h>
@@ -26,18 +26,18 @@ public:
 	
 	BOOL Update( DWORD dwDeltaTick );
 	
-	BOOL SendToLineServer( BYTE * pMsg, WORD wSize);
+	BOOL SendToJsonServer( BYTE * pMsg, WORD wSize);
 	
-	ServerSession * GetLineServerSession() const;
+	ServerSession * GetJsonServerSession() const;
 	
 private:
 	BOOL m_bShutdown;
 	
 	IOCPServer * m_pIOCPServer;
 	
-	ServerSession * m_pLineServer;
+	ServerSession * m_pJsonServer;
 };
 
 extern DBServer * g_DBServer;
 
-#endif // _AGENTSERVER_H_INCLUDED_
+#endif // _DBSERVER_H_INCLUDED_

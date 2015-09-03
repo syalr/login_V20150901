@@ -3,9 +3,11 @@
 #include <Utility.h>
 #include <Network.h>
 
+#include "PreLoginQuery.h"
 
 int main(int argc, char ** argv) 
 {
+	
 	g_DBServer = new DBServer;
 	assert(g_DBServer);
 	

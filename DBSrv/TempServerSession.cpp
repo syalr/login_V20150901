@@ -19,31 +19,47 @@ void TempServerSession::Clear()
 
 void TempServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
+	printf(">> TempServerSession::OnRecv\n");
+	
 	assert( m_bFirst == TRUE);
+	if ( !m_bFirst)
+		return;
+	
 	m_bFirst = FALSE;
 	
-	printf("Enter TempServerSession::OnRecv.\n");
+	if ( wSize < sizeof(MSG_CONNECTION_SYN) ) {
+		return;
+	}
 	
-	MSG_SERVER_TYPE * pRecvMsg = (MSG_SERVER_TYPE *)pMsg;
-	if ( pRecvMsg->m_byServerType == LINE_SERVER ) 
-	{
-		printf("2.Turn to Game_SERVER\n");
-		ServerSession * Obj = g_DBServer->GetLineServerSession();
-		if ( Obj == NULL) {
-			printf("\ng_DBServer->GetGameServerSession Fail.\n");
-			return;
-		}
+	MSG_CONNECTION_SYN * recvMsg = (MSG_CONNECTION_SYN *)pMsg;
 		
-		Session * pSession = this->m_pSession;
-		if ( pSession != NULL ) {
-			m_pSession->UnbindNetworkObject();
-			pSession->BindNetworkObject(Obj);
+	switch( recvMsg->ServerType )
+	{
+	case JSON_SERVER:
+		{
+			ServerSession * Obj = g_DBServer->GetJsonServerSession();
+			assert( Obj );
+			
+			Session * pSession = this->m_pSession;
+			if ( pSession != NULL ) 
+			{
+				m_pSession->UnbindNetworkObject();
+				pSession->BindNetworkObject(Obj);
+				
+				Obj->Init();
+			}
+			break;
+		}
+	default:
+		{
+			// Connected warning.
+			this->Release();
+			return;
 		}
 	}
 
 	printf("\n >>>> Free TempServerSesion <<<< \n");
 	DBFactory::Instance()->FreeTempServerSession(this);
-
 }
 
 void TempServerSession::OnConnect( BOOL bSuccess, DWORD dwNetworkIndex )

@@ -3,21 +3,21 @@
 DBFactory::DBFactory()
 {
 	m_pTempServerSessionPool = NULL;	
-	m_pLineServerSessionPool = NULL;
+	m_pJsonServerSessionPool = NULL;
 }
 
 DBFactory::~DBFactory()
 {
 	if (m_pTempServerSessionPool) 	delete m_pTempServerSessionPool;
-	if (m_pLineServerSessionPool) 	delete m_pLineServerSessionPool;
+	if (m_pJsonServerSessionPool) 	delete m_pJsonServerSessionPool;
 }
 
 void DBFactory::Init()
 {
 	m_pTempServerSessionPool 	= new MemoryFactory<TempServerSession>;
-	m_pLineServerSessionPool 	= new MemoryFactory<LineServerSession>; 
+	m_pJsonServerSessionPool 	= new MemoryFactory<JsonServerSession>; 
 	m_pTempServerSessionPool->Initialize(1,1);
-	m_pLineServerSessionPool->Initialize(1,1); // ???
+	m_pJsonServerSessionPool->Initialize(1,1); // ???
 }
 
 TempServerSession * DBFactory::AllocTempServerSession() 
@@ -29,18 +29,19 @@ TempServerSession * DBFactory::AllocTempServerSession()
 	}
 	return pSession;
 }
+
 void DBFactory::FreeTempServerSession(TempServerSession * pServerSession) {
 	return m_pTempServerSessionPool->Free(pServerSession);
 }
 
-LineServerSession * DBFactory::AllocLineServerSession() {
-	assert ( m_pLineServerSessionPool );
-	if (m_pLineServerSessionPool == NULL) {
+JsonServerSession * DBFactory::AllocJsonServerSession() {
+	assert ( m_pJsonServerSessionPool );
+	if (m_pJsonServerSessionPool == NULL) {
 		return NULL;
 	}
-	return m_pLineServerSessionPool->Alloc();	
+	return m_pJsonServerSessionPool->Alloc();	
 }
-void DBFactory::FreeLineServerSession(LineServerSession * pServerSession) {
-	return m_pLineServerSessionPool->Free(pServerSession);
+void DBFactory::FreeJsonServerSession(JsonServerSession * pServerSession) {
+	return m_pJsonServerSessionPool->Free(pServerSession);
 }
 

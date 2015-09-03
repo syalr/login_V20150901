@@ -10,7 +10,7 @@ DBServer::DBServer(void)
 {
 	m_bShutdown = FALSE;
 	m_pIOCPServer = NULL;
-	m_pLineServer = NULL;
+	m_pJsonServer = NULL;
 }
 
 DBServer::~DBServer(void)
@@ -49,9 +49,9 @@ BOOL DBServer::Init()
 
 	StartServerSideListen();
 
-	m_pLineServer = DBFactory::Instance()->AllocLineServerSession();
-	if ( m_pLineServer == NULL) {
-		printf("[DBFactory::Instance()->AllocLineServerSession] fail\n");
+	m_pJsonServer = DBFactory::Instance()->AllocJsonServerSession();
+	if ( m_pJsonServer == NULL) {
+		printf("[DBFactory::Instance()->AllocJsonServerSession] fail\n");
 		return FALSE;
 	}
 	
@@ -88,18 +88,18 @@ BOOL DBServer::Update( DWORD dwDeltaTick )
 	return TRUE;
 }
 
-BOOL DBServer::SendToLineServer( BYTE * pMsg, WORD wSize)
+BOOL DBServer::SendToJsonServer( BYTE * pMsg, WORD wSize)
 {
-	printf("[DBServer::SendToLoginServer]\n");
-	if ( m_pLineServer ) {
-		return m_pLineServer->Send( pMsg, wSize );
+	printf("[DBServer::SendToJsonServer]\n");
+	if ( m_pJsonServer ) {
+		return m_pJsonServer->Send( pMsg, wSize );
 	}
 	return FALSE;
 }
 	
-ServerSession * DBServer::GetLineServerSession() const
+ServerSession * DBServer::GetJsonServerSession() const
 {
-	return m_pLineServer;
+	return m_pJsonServer;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -116,6 +116,7 @@ NetworkObject * CreateServerSideAcceptedObject() {
 VOID DestroyServerSideAcceptedObject( NetworkObject *pObjs ) {
 	printf("[DBServer::DestroyServerSideAcceptedObject] Function\n");
 	
+	#if 0
 	ServerSession * pSession = (ServerSession *)pObjs;
 	eSERVER_TYPE eType = pSession->GetServerType();
 	
@@ -123,7 +124,8 @@ VOID DestroyServerSideAcceptedObject( NetworkObject *pObjs ) {
 		printf(">>>FreeLoginServerSession()\n");
 		LineServerSession * obj = (LineServerSession *)pObjs;
 		DBFactory::Instance()->FreeLineServerSession(obj);
-	}	
+	}
+	#endif 
 }
 
 VOID DestroyServerSideConnectedObject( NetworkObject *pNetworkObject ) {

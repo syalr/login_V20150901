@@ -1,12 +1,12 @@
-#ifndef _AGENT_FACTORY_H_INCLUDED_
-#define _AGENT_FACTORY_H_INCLUDED_
+#ifndef _DB_FACTORY_H_INCLUDED_
+#define _DB_FACTORY_H_INCLUDED_
 
 #include <Network.h>
 #include <Utility.h>
 
 #include "ServerSession.h"
 #include "TempServerSession.h"
-#include "LineServerSession.h"
+#include "JsonServerSession.h"
 
 using namespace A;
 
@@ -19,7 +19,7 @@ public:
 
 private:
 	MemoryFactory<TempServerSession>	* m_pTempServerSessionPool;
-	MemoryFactory<LineServerSession>	* m_pLineServerSessionPool; 
+	MemoryFactory<JsonServerSession>	* m_pJsonServerSessionPool; 
 
 public:
 	void Init(void);
@@ -29,8 +29,8 @@ public:
 	TempServerSession * AllocTempServerSession();
 	void FreeTempServerSession(TempServerSession * pServerSession);
 	
-	LineServerSession * AllocLineServerSession();
-	void FreeLineServerSession(LineServerSession * pServerSession);
+	JsonServerSession * AllocJsonServerSession();
+	void FreeJsonServerSession(JsonServerSession * pServerSession);
 };
 
-#endif
+#endif // _DB_FACTORY_H_INCLUDED_

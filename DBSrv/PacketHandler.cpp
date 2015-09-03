@@ -1,6 +1,7 @@
 #include "PacketHandler.h"
+
 #include "DBServer.h"
-#include "Handler_FromLineServer.h"
+#include "Handler_FromJsonServer.h"
 
 PacketHandler g_PacketHandler;
 
@@ -23,7 +24,7 @@ BOOL PacketHandler::RegisterHandler()
 
 void PacketHandler::Register_LD()
 {
-	AddHandler_LD(Login_Protocol, PreLogin_REQ, Handler_FromLineServer::OnPreLogin_REQ);
+	AddHandler_LD(Login_Protocol, PreLogin_REQ, Handler_FromJsonServer::OnPreLogin_REQ);
 }
 
 BOOL PacketHandler::AddHandler_LD( WORD category, WORD protocol, fnHandler fnHandler)
