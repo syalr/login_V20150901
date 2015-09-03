@@ -2,23 +2,23 @@
 #include <iostream>
 #include <Common.h>
 #include "Yond_json.h"
-#include "JsonPreLogin.h"
+#include "Json_PreLoginREQ.h"
 
 using std::cout;
 using std::endl;
 
-JsonPreLogin::JsonPreLogin()
+Json_PreLoginREQ::Json_PreLoginREQ()
 {
 	dwStatus = 0;
 }
 
 
-JsonPreLogin::~JsonPreLogin()
+Json_PreLoginREQ::~Json_PreLoginREQ()
 {
 	
 }
 
-int JsonPreLogin::ParseJson( const char * pInput )
+int Json_PreLoginREQ::ParseJson( const char * pInput )
 {
 	dwStatus = 0;
 	
@@ -88,20 +88,14 @@ int JsonPreLogin::ParseJson( const char * pInput )
 	return 0;
 }
 	
-MSG_PRELOGIN_REQ * JsonPreLogin::GetMsg(MSG_PRELOGIN_REQ * pMsg)
+MSG_PRELOGIN_REQ * Json_PreLoginREQ::GetMsg(MSG_PRELOGIN_REQ * pMsg)
 {
-	if ( dwStatus & 0x1F)
-	{	msg.m_dwLoginType = JSON_SERVER;
+	if ( dwStatus & 0x48)
+	{	
+		msg.m_dwLoginType = JSON_SERVER;
 		memcpy( pMsg, &msg, sizeof(msg) );
 		return pMsg;
 	}
 	return NULL;
 }
 
-
-void JsonPreLogin::SetMsg( MSG_PRELOGIN_REQ * pMsg )
-{
-	memcpy( &msg, pMsg sizeof(msg) );
-}
-	
-	char * GetMsg( char * pInput, WORD wSize );

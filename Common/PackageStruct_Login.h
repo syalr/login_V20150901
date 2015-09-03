@@ -35,9 +35,8 @@ struct MSG_PRELOGIN_REQ : public MSG_BASE_FORWARD
 // 预登陆 应答
 struct MSG_PRELOGIN_ANC : public MSG_BASE_FORWARD
 {
-	DWORD 	m_uiRootID;
+	DWORD 	m_uiUserID;
 	BYTE 	m_byUserKey[CODE_KEY_LEN + 1];
-	
 	BYTE	m_byIP[IP_MAX_LEN]; 	//32
 	DWORD	m_dwPort;
 	
@@ -45,11 +44,9 @@ struct MSG_PRELOGIN_ANC : public MSG_BASE_FORWARD
 	{
 		memset( this, 0, sizeof(MSG_PRELOGIN_ANC) );
 		
-		m_byCategory = Login_Protocol; 
-		m_byProtocol = PreLogin_ANC;
-		
-		m_dwParameter = 0;		// dwUserID
-		m_byParameter = 0;
+		m_byCategory 	= Login_Protocol; 
+		m_byProtocol 	= PreLogin_ANC;
+		m_dwParameter 	= 0;				// dwUserID
 	}
 };
 
@@ -57,6 +54,7 @@ struct MSG_PRELOGIN_ANC : public MSG_BASE_FORWARD
 // 预登陆 报错
 struct MSG_PRELOGIN_NAK : public MSG_BASE_FORWARD
 {
+	WORD error;
 	MSG_PRELOGIN_NAK() 
 	{
 		memset( this, 0, sizeof(MSG_PRELOGIN_NAK) );

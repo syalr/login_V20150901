@@ -12,8 +12,7 @@ INC = -I$(HOME)/Utility \
 	  -I$(HOME)/Public \
 	  -I$(HOME)/Common \
 	  -I$(HOME)/LoginSrv \
-	  -I$(HOME)/JsonSrv \
-	  -I$(HOME)/DBSrv
+	  -I$(HOME)/JsonSrv
 	  
 
 OBJS = 	Utility/Yond_mutex.o \
@@ -31,8 +30,8 @@ OBJS = 	Utility/Yond_mutex.o \
 		Network/IOCPServer.o \
 		Public/InfoParser.o \
 		Public/Yond_json.o \
-		Public/JsonParser.o \
-		Public/MsgBuff.o
+		Public/JsonString.o \
+		Public/InfoParser.o
 		
 JSONS =	JsonSrv/JsonFactory.o \
 		JsonSrv/JsonServer.o \
@@ -42,8 +41,6 @@ JSONS =	JsonSrv/JsonFactory.o \
 		JsonSrv/Handler_FromLoginServer.o \
 		JsonSrv/LoginServerSession.o \
 		JsonSrv/DBServerSession.o \
-		JsonSrv/Json_PreLoginREQ.o \
-		JsonSrv/Json_PreLoginANC.o \
 		JsonSrv/JsonMain.o
 
 Login =	LoginSrv/BinarySession.o \
@@ -57,37 +54,15 @@ Login =	LoginSrv/BinarySession.o \
 		LoginSrv/LoginServer.o \
 		LoginSrv/LoginMain.o
 		
-DBSrv =	HyMysql/IDBCInterface.o \
-		HyMysql/IMysql.o \
-		HyMysql/QueryExecuteProcessor.o \
-		HyMysql/QueryResult.o \
-		HyMysql/HyDatabase.o \
-		DBSrv/LoginServerQuery.o \
-		DBSrv/DBConnectDir.o \
-		DBSrv/DBFactory.o \
-		DBSrv/DBMain.o \
-		DBSrv/DBServer.o \
-		DBSrv/Handler_FromLineServer.o \
-		DBSrv/LineServerSession.o \
-		DBSrv/LoginServerQuery.o \
-		DBSrv/PacketHandler.o \
-		DBSrv/ServerSession.o \
-		DBSrv/TempServerSession.o
-		
 BINDIR = $(HOME)/bin
 
-all: checkbin $(BINDIR)/JsonSrv $(BINDIR)/LoginSrv $(BINDIR)/DBSrv 
+all: checkbin $(BINDIR)/JsonSrv $(BINDIR)/LoginSrv 
 
 $(BINDIR)/JsonSrv: $(JSONS) $(OBJS)
 	$(CC) -g $^ -o $@ -pthread
 
 $(BINDIR)/LoginSrv: $(Login) $(OBJS)
 	$(CC) -g $^ -o $@ -pthread
-	
-	
-$(BINDIR)/DBSrv: $(Login) $(OBJS)
-	$(CC) -g $^ -o $@ -pthread
-	
 	
 .SUFFIXES: .c .o .cpp
 .cpp.o:
@@ -105,6 +80,5 @@ clean:
 	rm -f Public/*.o
 	rm -f JsonSrv/*.o
 	rm -f LoginSrv/*.o
-	rm -f DBSrv/*.o
 	rm -rf $(BINDIR)
 	

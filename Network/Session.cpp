@@ -275,7 +275,7 @@ void Session::OnConnect( BOOL bSuccess )
 	
 	NetworkObject *pNetworkObject = m_pNetworkObject;
 
-	if( !bSuccess ) {	
+	if( !bSuccess ) {
 		UnbindNetworkObject();
 	}
 
@@ -284,6 +284,7 @@ void Session::OnConnect( BOOL bSuccess )
 
 void Session::Disconnect( BOOL bGracefulDisconnect )
 {
+	printf( "[Session::Disconnect = %d \n]", bGracefulDisconnect ) ;
 	if( bGracefulDisconnect ) { 
 		this->Remove(); 
 	} 

@@ -1,7 +1,7 @@
 #include "LoginServerSession.h"
 #include "PacketHandler.h"
 #include <Public.h>
-#include "JsonPreLogin.h"
+#include "Json_PreLoginREQ.h"
 
 LoginServerSession::LoginServerSession()
 {
@@ -36,7 +36,9 @@ void LoginServerSession::OnRecv(BYTE * pMsg, WORD wSize)
 	memcpy(json_msgs, pMsg + sizeof(bMsg), wSize - sizeof(bMsg)); 
 	
 	JsonParser js_pid;
-	js_pid.ParseJson(json_msgs);
+	if ( js_pid.ParseJson(json_msgs) == -1) {
+		return;   // Error do not a json format;
+	}
 	
 	MSG_PRELOGIN_REQ x;
 	DWORD pid = js_pid.GetProtocol();

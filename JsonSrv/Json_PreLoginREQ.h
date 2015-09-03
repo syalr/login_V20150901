@@ -1,7 +1,7 @@
-﻿#ifndef _JSON_PRELOGIN_H_INCLUDED_
-#define _JSON_PRELOGIN_H_INCLUDED_
+﻿#ifndef _JSON_PRELOGINREQ_H_INCLUDED_
+#define _JSON_PRELOGINREQ_H_INCLUDED_
 
-class JsonPreLogin
+class Json_PreLoginREQ
 {
 	enum
 	{
@@ -9,15 +9,15 @@ class JsonPreLogin
 		eACCESSID		= 0x02,
 		eUSERNAME 		= 0x04,
 		ePASSWORD 		= 0x08,
-		eSSHKEY 		= 0x0F,
-		eGAMEID 		= 0x10,
-		ePROTOCOL 		= 0x20,
+		eSSHKEY 		= 0x10,
+		eGAMEID 		= 0x20,
+		ePROTOCOL 		= 0x40,
 	};
 
 public:
 
-	JsonPreLogin();
-	~JsonPreLogin();
+	Json_PreLoginREQ();
+	~Json_PreLoginREQ();
 
 	int ParseJson( const char * pInput );
 	
