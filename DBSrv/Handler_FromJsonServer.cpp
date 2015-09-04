@@ -78,11 +78,15 @@ HANDLER_IMPL( PreLogin_REQ )
 			memcpy( msg2.m_byUserKey, szUserSshKey, CODE_KEY_LEN + 1 ); 	// User SSH Key
 			
 			g_DBServer->SendToJsonServer( (BYTE *)&msg2, sizeof(msg2) );
+			
+			printf("Success. PreLogin_REQ\n");
 		}
 		else {
-			printf("ErrorCode : %d \n",nRet);
+			printf("Handler_FromJsonServer::PreLogin_REQ ErrorCode : %d \n",nRet);
 			// 返回出错消息 MSG_PRELOGIN_NAK
 			MSG_PRELOGIN_NAK msg2;
+			msg2.m_wParameter  = pRecvMsg->m_wParameter;
+			printf ("Handler_FromJsonServer::PreLogin_REQ m_wParameter = %d \n", pRecvMsg->m_wParameter);
 			msg2.error = nRet;
 			
 			g_DBServer->SendToJsonServer( (BYTE *)&msg2, sizeof(msg2) );
@@ -91,7 +95,7 @@ HANDLER_IMPL( PreLogin_REQ )
 		Query_PreLogin::FREE( pQuery );
 		pQuery = NULL;
 		
-		printf("Success. PreLogin_REQ\n");
+		
 	}
 	
 	
