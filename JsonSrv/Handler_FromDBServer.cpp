@@ -17,7 +17,7 @@ HANDLER_IMPL( PreLogin_ANC )
 {
 	printf(">> PreLogin_ANC\n");
 	
-	// MSG_LD_LOGIN_ANC * pRecvMsg = (MSG_LD_LOGIN_ANC *) pMsg;
+	MSG_PRELOGIN_ANC * pRecvMsg = (MSG_PRELOGIN_ANC *) pMsg;
 	Json_PreLoginANC js_prologin;
 	js_prologin.SetMsg( ( MSG_PRELOGIN_ANC* )pMsg );
 	
@@ -27,6 +27,10 @@ HANDLER_IMPL( PreLogin_ANC )
 	if ( dwlen != 0 ) {
 		
 		MSG_BASE_FORWARD sendLogin;
+		sendLogin.m_wParameter = pRecvMsg->m_wParameter;
+		
+		printf ("Handler_FromDBServer::PreLogin_ANC m_wParameter %d = %d \n", sendLogin.m_wParameter, pRecvMsg->m_wParameter);
+		
 		memcpy( &sendLogin, pMsg, sizeof(sendLogin) );
 		
 		BYTE byBuff[1024] = {0};
@@ -34,7 +38,9 @@ HANDLER_IMPL( PreLogin_ANC )
 		msgbuff.Write( &sendLogin, sizeof(sendLogin) );
 		msgbuff.Write( cBuff, dwlen);
 		dwlen = msgbuff.GetWriteLen();
-		g_pJsonServer->SendToLoginServer( (BYTE*)&sendLogin, dwlen );
+		g_pJsonServer->SendToLoginServer( (BYTE*)&byBuff, dwlen );
+		
+		printf("Success. PreLogin_ANC\n");
 	}
 }
 

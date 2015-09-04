@@ -63,7 +63,7 @@ void TempServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 				m_pSession->UnbindNetworkObject();
 				pSession->BindNetworkObject(Obj);
 				
-				Obj->Init();
+				//Obj->Init();
 			}
 			break;
 		}

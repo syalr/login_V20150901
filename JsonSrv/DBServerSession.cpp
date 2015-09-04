@@ -1,5 +1,7 @@
 #include "DBServerSession.h"
 
+#include "PacketHandler.h"
+
 DBServerSession::DBServerSession()
 {	
 }
@@ -27,8 +29,8 @@ void DBServerSession::Update()
 void DBServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
 	printf("[DBServerSession::OnRecv]\n");
-	printf("call g_PacketHandler.ParsePacket_LD function.\n");
-	//g_PacketHandler.ParsePacket_LD( this, (MSG_BASE *)pMsg, wSize );
+	printf("call g_PacketHandler.ParsePacket_JD function.\n");
+	g_PacketHandler.ParsePacket_JD( this, (MSG_BASE *)pMsg, wSize );
 }
 
 void DBServerSession::OnConnect( BOOL bSuccess, DWORD dwSessionIndex )

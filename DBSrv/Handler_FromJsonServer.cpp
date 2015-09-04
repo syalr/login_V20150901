@@ -2,6 +2,8 @@
 
 #include <Public.h>
 
+#include "DBServer.h"
+
 #include "PreLoginQuery.h"
 
 Handler_FromJsonServer::Handler_FromJsonServer() 
@@ -68,24 +70,29 @@ HANDLER_IMPL( PreLogin_REQ )
 			
 			// 返回 PreLogin 应答消息
 			MSG_PRELOGIN_ANC msg2;
+			msg2.m_wParameter  = pRecvMsg->m_wParameter;
+			printf ("Handler_FromJsonServer::PreLogin_REQ m_wParameter %d = %d \n", msg2.m_wParameter, pRecvMsg->m_wParameter);
 			msg2.m_uiUserID 	= pQuery->vctRes[0].m_uiUserID; // User ID
-			msg2.m_dwPort 		= pQuery->vctRes[0].m_uiPort; 	// Port
-			
+			msg2.m_dwPort 		= pQuery->vctRes[0].m_uiPort; 	// Port			
 			memcpy( msg2.m_byIP, pQuery->vctRes[0].m_szIP, IP_MAX_LEN ); 	// IP 
 			memcpy( msg2.m_byUserKey, szUserSshKey, CODE_KEY_LEN + 1 ); 	// User SSH Key
 			
-			pServerSession->Send( (BYTE*)&msg2, sizeof(msg2) );
+			g_DBServer->SendToJsonServer( (BYTE *)&msg2, sizeof(msg2) );
 		}
 		else {
 			printf("ErrorCode : %d \n",nRet);
 			// 返回出错消息 MSG_PRELOGIN_NAK
-			//MSG_PRELOGIN_NAK msg2;
-			//msg2.error = nRet;
-			//sprintf( (char *)msg2.m_szErr, "%s", "This is a Error Message.\n" );
-			//pServerSession->Send( (BYTE*)&msg2, sizeof(msg2) );
+			MSG_PRELOGIN_NAK msg2;
+			msg2.error = nRet;
+			
+			g_DBServer->SendToJsonServer( (BYTE *)&msg2, sizeof(msg2) );
 		}	
 	
 		Query_PreLogin::FREE( pQuery );
-		pQuery = NULL;		
+		pQuery = NULL;
+		
+		printf("Success. PreLogin_REQ\n");
 	}
+	
+	
 }

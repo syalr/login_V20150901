@@ -3,6 +3,8 @@
 
 #include <dbCommon.h>
 
+#pragma pack(push,1)
+
 class Query_PreLogin : public QueryResult
 {
 	_DECLARE_QUERY_POOL( Query_PreLogin );
@@ -66,5 +68,7 @@ public:
 		_BINDING_PARAM_PTR(5, m_nLoginType,  SQL_PARAM_INPUT)
 	_END_PARAM_DATA()
 };
+
+#pragma pack(pop)
 
 #endif // __PRELOGIN_QUERY_H_INCLUDED__

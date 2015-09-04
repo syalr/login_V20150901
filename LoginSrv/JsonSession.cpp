@@ -26,7 +26,9 @@ void JsonSession::Release()
 
 void JsonSession::OnRecv(BYTE *pMsg, WORD wSize)
 {
-	
+	printf("JsonSession::OnRecv\n");
+	MSG_BASE_FORWARD * pRecvMsg = (MSG_BASE_FORWARD *)pMsg;
+	printf("m_wParameter : %d, Port: %s\n", pRecvMsg->m_wParameter);
 	
 	g_pLoginServer->SendToClient(pMsg, wSize);
 }

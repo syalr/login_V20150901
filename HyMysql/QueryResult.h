@@ -6,6 +6,8 @@
 
 #define	MAX_QUERY_LENGTH	/*256*/512 
 
+#pragma pack(push,1)
+
 enum eQUERYTYPE
 {
 	eErrorQuery,
@@ -83,6 +85,8 @@ private:
 	char							m_pszQuery[MAX_QUERY_LENGTH];
 
 };
+
+#pragma pack(pop)
 
 #endif // __QUERY_RESULT_H__
 	
