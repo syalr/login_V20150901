@@ -17,7 +17,7 @@ LoginServer::LoginServer(void)
 	m_pIOCPServer 	= NULL;
 	
 	// Keyv Server
-	m_pKeyvServer   = NULL;
+	//m_pKeyvServer   = NULL;
 	
 	// UserKey
 	memset( m_pUserSession, 0x0, PORT_MAX);
@@ -74,17 +74,15 @@ BOOL LoginServer::Init()
 	if ( !m_pIOCPServer->Init(desc, 2) ) {
 		return FALSE;
 	}
-	
-	//g_UserManager.InitUserSize( MAX_PLAYER_NUM ); // 1000
-	
+		
 	StartServerSideListen();
 	StartClientSideListen();
 	
-	m_pKeyvServer = LoginFactory::Instance()->AllocKeyvSession();
-	if ( m_pKeyvServer == NULL) {
-		printf("[LoginFactory::Instance()->AllocKeyvSession] fail\n");
-		return FALSE;
-	}
+	//m_pKeyvServer = LoginFactory::Instance()->AllocKeyvSession();
+	//if ( m_pKeyvServer == NULL) {
+	//	printf("[LoginFactory::Instance()->AllocKeyvSession] fail\n");
+	//	return FALSE;
+	//}
 	
 	m_pJsonServer = LoginFactory::Instance()->AllocJsonSession();
 	if ( m_pJsonServer == NULL) {
@@ -169,11 +167,11 @@ BOOL LoginServer::OvertimeClear( DWORD dwDeltaTick )
 
 BOOL LoginServer::SendToAllServer( BYTE * pMsg, WORD wSize)
 {
-	printf("[LoginServer::SendToLineServer]\n");
+	printf("[LoginServer::SendToAllServer]\n");
 	
-	if ( m_pKeyvServer ) {
-		return m_pKeyvServer->Send( pMsg, wSize );
-	}
+	//if ( m_pKeyvServer ) {
+	//	return m_pKeyvServer->Send( pMsg, wSize );
+	//}
 	
 	if ( m_pJsonServer ) {
 		return m_pJsonServer->Send( pMsg, wSize );
@@ -181,9 +179,10 @@ BOOL LoginServer::SendToAllServer( BYTE * pMsg, WORD wSize)
 	return FALSE;
 }
 
-ServerSession * LoginServer::GetKeyvSession() const {
-	return m_pKeyvServer;
-}
+//ServerSession * LoginServer::GetKeyvSession() const {
+//	return m_pKeyvServer;
+//}
+
 ServerSession * LoginServer::GetJsonSession() const {
 	return m_pJsonServer;
 }
@@ -219,13 +218,13 @@ BOOL LoginServer::SetUserSession(WORD wIndex, UserSession * pSession)
 	
 	printf(" [ LoginServer::SetUserSession pSession = %d ] \n", pSession);
 			
-	if ( pSession != NULL ) {
-		m_lsOvertimeTable.push_back(wIndex);
-		for (int i = 0; i< m_lsOvertimeTable.size(); ++i)
-			printf(" [ LoginServer::SetUserSession size = %d ] \n", m_lsOvertimeTable.size());		
-	}
-	
-	printf(" [LoginServer::SetUserSession wIndex = %d ] \n", wIndex);
+	//if ( pSession != NULL ) {
+	//	m_lsOvertimeTable.push_back(wIndex);
+	//	for (int i = 0; i< m_lsOvertimeTable.size(); ++i)
+	//		printf(" [ LoginServer::SetUserSession size = %d ] \n", m_lsOvertimeTable.size());		
+	//}
+	//
+	//printf(" [LoginServer::SetUserSession wIndex = %d ] \n", wIndex);
 	
 	return TRUE;
 }

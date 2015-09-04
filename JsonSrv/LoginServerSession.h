@@ -18,6 +18,7 @@ public:
 	virtual void    Release();
 	virtual void    Update();
 	
+	void SendConnectionSyn();
 public:
 	virtual void	OnRecv( BYTE *pMsg, WORD wSize );
     virtual void    OnConnect( BOOL bSuccess, DWORD dwSessionIndex );

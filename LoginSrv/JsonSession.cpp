@@ -12,11 +12,11 @@ JsonSession::~JsonSession()
 void JsonSession::Init()
 {
 	// Test
-	printf("[ JsonSession::Init ]");
-	
-	char msgbuff[1024] = "                        {\"Protocol\" : \"13107900\", \"aid\" : \"1\", \"sshkey\" : \"sad1\",  \"UserName\" : \"kim\",  \"Password\" : \"123qwe\", \"gameid\" : \"123\" }";
-	MSG_BASE_FORWARD bMsg;
-	this->Send( (BYTE*) msgbuff, strlen(msgbuff) );
+	//printf("[ JsonSession::Init ]");
+	//
+	//char msgbuff[1024] = "                        {\"Protocol\" : \"13107900\", \"aid\" : \"1\", \"sshkey\" : \"sad1\",  \"UserName\" : \"kim\",  \"Password\" : \"123qwe\", \"gameid\" : \"123\" }";
+	//MSG_BASE_FORWARD bMsg;
+	//this->Send( (BYTE*) msgbuff, strlen(msgbuff) );
 }
 
 void JsonSession::Release()

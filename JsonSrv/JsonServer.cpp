@@ -43,7 +43,7 @@ BOOL JsonServer::Init()
 	desc[0].dwRecvBufferSize		 	= 2000000;
 	desc[0].dwTimeOut					= 0;
 	desc[0].dwNumberOfAcceptThreads		= 0; // Accept
-	desc[0].dwNumberOfIoThreads			= 8; // 假如为1的话，Login连接了Agent与DB后，Agent发给Login的消息无法正常接收
+	desc[0].dwNumberOfIoThreads			= 8; // 
 	desc[0].dwNumberOfConnectThreads	= 1; // Connect
 	desc[0].dwMaxPacketSize				= 60000; //4096
 	desc[0].fnCreateAcceptedObject		= CreateServerSideAcceptedObject;

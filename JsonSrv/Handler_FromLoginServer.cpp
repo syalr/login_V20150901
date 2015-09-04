@@ -13,7 +13,7 @@ Handler_FromLoginServer::~Handler_FromLoginServer()
 HANDLER_IMPL( PreLogin_REQ )
 {
 	printf(">> Handler_FromLoginServer::PreLogin_REQ \n");
-	printf(">> [ %s ] \n", pMsg );
+	//printf(">> [ %s ] \n", pMsg );
 	
 	char json_msgs[1024] = {0};
 	MSG_BASE_FORWARD bMsg; 

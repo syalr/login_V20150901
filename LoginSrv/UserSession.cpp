@@ -118,8 +118,8 @@ void UserSession::OnRecv(BYTE *pMsg, WORD wSize)
 		MSG_BASE_FORWARD xMsg;
 		xMsg.m_wParameter = m_wUserKey;
 		memcpy( msgPlus, &xMsg, sizeof(xMsg) );
-		memcpy( msgPlus, pMsg, wSize );
-		g_pLoginServer->SendToAllServer( msgPlus, wSize + sizeof(MSG_BASE_FORWARD) );
+		memcpy( msgPlus + sizeof(xMsg), pMsg, wSize );
+		g_pLoginServer->SendToAllServer( msgPlus, wSize + sizeof(xMsg) );
 	}
 	
 	m_dwOvertime = Session::GetTickCount() + UserSession::m_dwServerDelay;

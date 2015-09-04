@@ -61,12 +61,19 @@ void LoginServerSession::OnConnect( BOOL bSuccess, DWORD dwNetworkIndex )
 	ServerSession::OnConnect( bSuccess, dwNetworkIndex );
 	if ( bSuccess ) {
 		printf("[LoginServerSession::OnConnect] success.\n");
-		printf("Send Server Type.\n");
-		ServerSession::SendServerType();
+		printf("Send MSG_CONNECTION_SYN to Login.\n");
+		this->SendConnectionSyn();
 	}
 	else {
 		printf("[LoginServer]: LoginServerSession::OnConnect Fail\n");
 	}
+}
+
+void LoginServerSession::SendConnectionSyn()
+{
+	MSG_CONNECTION_SYN msg;
+	msg.ServerType = JSON_SERVER;
+	Send( (BYTE *)&msg, sizeof(MSG_CONNECTION_SYN) );
 }
 
 void LoginServerSession::OnDisconnect()

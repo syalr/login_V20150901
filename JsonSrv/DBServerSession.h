@@ -12,12 +12,13 @@ public:
 	DBServerSession();
 	virtual ~DBServerSession();
 	
-	eSERVER_TYPE    GetServerType() { return DB_SERVER; }
+	eSERVER_TYPE    GetServerType() { return JSON_SERVER; }
 	
 	virtual void    Init();
 	virtual void 	Release();
 	virtual void 	Update();
 	
+	void SendConnectionSyn();
 protected:
 	virtual void	OnRecv(BYTE *pMsg, WORD wSize);
 	virtual void 	OnConnect( BOOL bSuccess, DWORD dwSessionIndex );

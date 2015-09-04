@@ -2,6 +2,8 @@
 
 #include <Public.h>
 
+#include "PreLoginQuery.h"
+
 Handler_FromJsonServer::Handler_FromJsonServer() 
 {
 	
@@ -18,8 +20,9 @@ HANDLER_IMPL( PreLogin_REQ )
 	
 	MSG_PRELOGIN_REQ * pRecvMsg = (MSG_PRELOGIN_REQ *)pMsg;
 	// MSG_PRELOGIN_REQ 消息包的 m_dwAccessID 没用到
-	pRecvMsg->
-	// 生成 用户 MD5s( 随机数 + lastime + rid ) 此处设计不合理，此时还不知道 rid
+	printf("UserName: %s, Password:%s \n", pRecvMsg->m_byUsername, pRecvMsg->m_byPassword );
+	//pRecvMsg->
+	// 生成 用户 MD5s( 随机数 + lastime + rid )
 	char szUserSshKey[ CODE_KEY_LEN + 1 ] = { 0 }; // 33位
 	
 	char szRandom[11] = {0}; // 生成一个5位的随机值
@@ -37,7 +40,8 @@ HANDLER_IMPL( PreLogin_REQ )
 	//tmpStr += ; // 获取当前时间
 	string outMD5 = MD5(tmpStr).toString() ;	
 	sprintf( (char *)szUserSshKey, "%s", outMD5.c_str() );
-	printf("outMD5 = %s, User SSH Key = %s\n", outMD5.c_str(), szUserSshKey );
+	szUserSshKey[ CODE_KEY_LEN ] = '\0';
+	printf("User SSH Key = %s\n", szUserSshKey );
 	
 	// 查询数据库
 	CHAR szQueryBuff[1024];
@@ -49,7 +53,7 @@ HANDLER_IMPL( PreLogin_REQ )
 						pRecvMsg->m_dwGameID,
 						pRecvMsg->m_dwLoginType
 						);
-	Query_ProLogin * pQuery = Query_ProLogin::ALLOC();
+	Query_PreLogin * pQuery = Query_PreLogin::ALLOC();
 		
 	if ( NULL != pQuery ) {
 		pQuery->SetQuery( szQueryBuff );
@@ -81,7 +85,7 @@ HANDLER_IMPL( PreLogin_REQ )
 			//pServerSession->Send( (BYTE*)&msg2, sizeof(msg2) );
 		}	
 	
-		Query_ProLogin::FREE( pQuery );
+		Query_PreLogin::FREE( pQuery );
 		pQuery = NULL;		
 	}
 }

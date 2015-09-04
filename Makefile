@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -g -fPIC -D_FILELINE -Wno-deprecated 
 
-HOME = /mnt/Shared/T20150901
-#HOME = /usr/local/moche_v20150728
+#HOME = /mnt/Shared/T20150901
+HOME = /mnt/share/login_V20150901
 
 MYSQLINC = /usr/include/mysql
 MYSQLLIB = -L /usr/lib64/mysql -l mysqlclient -lz -lm
@@ -13,7 +13,9 @@ INC = -I$(HOME)/Utility \
 	  -I$(HOME)/Common \
 	  -I$(HOME)/LoginSrv \
 	  -I$(HOME)/JsonSrv \
-	  -I$(HOME)/DBSrv
+	  -I$(HOME)/DBSrv \
+	  -I $(HOME)/HyMysql \
+	  -I$(MYSQLINC) 
 	  
 
 OBJS = 	Utility/Yond_mutex.o \
@@ -32,7 +34,9 @@ OBJS = 	Utility/Yond_mutex.o \
 		Public/InfoParser.o \
 		Public/Yond_json.o \
 		Public/JsonParser.o \
-		Public/MsgBuff.o
+		Public/MsgBuff.o \
+		Public/Yond_drng.o \
+		Public/Yond_md5.o 
 		
 JSONS =	JsonSrv/JsonFactory.o \
 		JsonSrv/JsonServer.o \
@@ -57,22 +61,21 @@ Login =	LoginSrv/BinarySession.o \
 		LoginSrv/LoginServer.o \
 		LoginSrv/LoginMain.o
 		
-DBSrv =	HyMysql/IDBCInterface.o \
+DBSrv =	HyMysql/HyDatabase.o \
+		HyMysql/IDBCInterface.o \
 		HyMysql/IMysql.o \
 		HyMysql/QueryExecuteProcessor.o \
 		HyMysql/QueryResult.o \
-		HyMysql/HyDatabase.o \
-		DBSrv/LoginServerQuery.o \
 		DBSrv/DBConnectDir.o \
 		DBSrv/DBFactory.o \
 		DBSrv/DBMain.o \
 		DBSrv/DBServer.o \
-		DBSrv/Handler_FromLineServer.o \
-		DBSrv/LineServerSession.o \
-		DBSrv/LoginServerQuery.o \
+		DBSrv/Handler_FromJsonServer.o \
+		DBSrv/JsonServerSession.o \
 		DBSrv/PacketHandler.o \
 		DBSrv/ServerSession.o \
-		DBSrv/TempServerSession.o
+		DBSrv/TempServerSession.o \
+		DBSrv/PreLoginQuery.o
 		
 BINDIR = $(HOME)/bin
 
@@ -85,8 +88,8 @@ $(BINDIR)/LoginSrv: $(Login) $(OBJS)
 	$(CC) -g $^ -o $@ -pthread
 	
 	
-$(BINDIR)/DBSrv: $(Login) $(OBJS)
-	$(CC) -g $^ -o $@ -pthread
+$(BINDIR)/DBSrv: $(DBSrv) $(OBJS)
+	$(CC) -g $(MYSQLLIB) $^ -o $@ -pthread
 	
 	
 .SUFFIXES: .c .o .cpp
@@ -103,8 +106,16 @@ clean:
 	rm -f Utility/*.o
 	rm -f Network/*.o
 	rm -f Public/*.o
-	rm -f JsonSrv/*.o
+	
 	rm -f LoginSrv/*.o
+	rm -f $(BINDIR)/LoginSrv
+	
+cleanDB:
 	rm -f DBSrv/*.o
-	rm -rf $(BINDIR)
+	rm -f HyMysql/*.o
+	rm -f $(BINDIR)/DBSrv
+	
+cleanJ:
+	rm -f JsonSrv/*.o
+	rm -f $(BINDIR)/JsonSrv
 	

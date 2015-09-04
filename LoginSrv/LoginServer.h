@@ -27,7 +27,7 @@ public:
 	
 	// Keyv Server;
 	BOOL SendToAllServer( BYTE * pMsg, WORD wSize);
-	ServerSession * GetKeyvSession() const;
+	//ServerSession * GetKeyvSession() const;
 	ServerSession * GetJsonSession() const;
 	
 	// User Server;
@@ -42,7 +42,7 @@ private:
 	IOCPServer *m_pIOCPServer;
 
 	// Keyv Server;
-	ServerSession *m_pKeyvServer;
+	//ServerSession *m_pKeyvServer;
 	
 	// Json Server;
 	ServerSession *m_pJsonServer;

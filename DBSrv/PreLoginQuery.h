@@ -1,11 +1,11 @@
-#ifndef __LOGINSERVERQUERY_H_INCLUDED__
-#define __LOGINSERVERQUERY_H_INCLUDED__
+#ifndef __PRELOGIN_QUERY_H_INCLUDED__
+#define __PRELOGIN_QUERY_H_INCLUDED__
 
 #include <dbCommon.h>
 
-class Query_ProLogin : public QueryResult
+class Query_PreLogin : public QueryResult
 {
-	_DECLARE_QUERY_POOL( Query_ProLogin );
+	_DECLARE_QUERY_POOL( Query_PreLogin );
 	
 public:
 	
@@ -67,8 +67,4 @@ public:
 	_END_PARAM_DATA()
 };
 
-
-
-
-
-#endif
+#endif // __PRELOGIN_QUERY_H_INCLUDED__

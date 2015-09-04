@@ -37,6 +37,7 @@ void TempServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 	{
 	case JSON_SERVER:
 		{
+			printf("Recv Json Server.\n");
 			ServerSession * Obj = g_DBServer->GetJsonServerSession();
 			assert( Obj );
 			
@@ -46,19 +47,21 @@ void TempServerSession::OnRecv(BYTE *pMsg, WORD wSize)
 				m_pSession->UnbindNetworkObject();
 				pSession->BindNetworkObject(Obj);
 				
-				Obj->Init();
+				//Obj->Init();
 			}
 			break;
 		}
 	default:
 		{
 			// Connected warning.
+			printf("Error: Default Type.\n");
 			this->Release();
 			return;
 		}
 	}
 
 	printf("\n >>>> Free TempServerSesion <<<< \n");
+	this->Clear();
 	DBFactory::Instance()->FreeTempServerSession(this);
 }
 

@@ -36,12 +36,18 @@ void DBServerSession::OnConnect( BOOL bSuccess, DWORD dwSessionIndex )
 	ServerSession::OnConnect( bSuccess, dwSessionIndex );
 	if ( bSuccess ) {
 		printf("[DBServerSession::OnConnect] success.\n");
-		printf("Send Server Type.\n");
-		
-		ServerSession::SendServerType();
+		printf("Send MSG_CONNECTION_SYN to Login.\n");
+		this->SendConnectionSyn();
 	}
 	else
 		printf("[LoginServer]: DBServerSession::OnConnect Fail\n");
+}
+
+void DBServerSession::SendConnectionSyn()
+{
+	MSG_CONNECTION_SYN msg;
+	msg.ServerType = JSON_SERVER;
+	Send( (BYTE *)&msg, sizeof(MSG_CONNECTION_SYN) );
 }
 
 void DBServerSession::OnDisconnect()
