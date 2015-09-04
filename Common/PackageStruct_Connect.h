@@ -2,7 +2,7 @@
 #define _PACKAGESTRUCT_CONNECT_H_INCLUDED_
 
 #include "PackageStruct.h"
-#include "Protocol_connect.h"
+#include "Protocol_Connect.h"
 
 #pragma pack(push, 1)
 

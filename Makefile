@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -g -fPIC -D_FILELINE -Wno-deprecated 
 
 #HOME = /mnt/Shared/T20150901
-HOME = /mnt/share/login_V20150901
+HOME = /usr/games/login_V20150901
 
 MYSQLINC = /usr/include/mysql
 MYSQLLIB = -L /usr/lib64/mysql -l mysqlclient -lz -lm
